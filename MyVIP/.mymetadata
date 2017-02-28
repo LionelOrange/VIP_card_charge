@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="MyVIP"
+  id="myeclipse.1484137660322"
+  context-root="/MyVIP"
+  j2ee-spec="6.0"
+  archive="MyVIP.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+

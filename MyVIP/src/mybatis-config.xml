@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<properties resource="jdbc.properties"></properties>
+	<typeAliases>
+		<typeAlias type="com.pro.domain.ActivitySetting" alias="acSetting"/>
+		<typeAlias type="com.pro.domain.ActivityDetail" alias="detail"/>
+		<typeAlias type="com.pro.domain.ActivityPriority" alias="priority"/>
+		<typeAlias type="com.pro.domain.ChargeRecord" alias="chRecord"/>
+		<typeAlias type="com.pro.domain.PointsRecord" alias="poRecord"/>
+		<typeAlias type="com.pro.domain.PointsCategory" alias="poCategory"/>
+		<typeAlias type="com.pro.domain.Employee" alias="employee"/>
+		<typeAlias type="com.pro.domain.VipCard" alias="vipcard"/>
+		<typeAlias type="com.pro.domain.CardStatus" alias="status"/>
+		<typeAlias type="com.pro.domain.Exchange" alias="exchange"/>
+		<typeAlias type="com.pro.domain.Provider" alias="provider"/>
+		<typeAlias type="com.pro.domain.Categorys" alias="category"/>
+		<typeAlias type="com.pro.domain.Products" alias="product"/>
+	</typeAliases>
+  <environments default="development">
+    <environment id="development">
+      <transactionManager type="JDBC"/>
+      <dataSource type="POOLED">
+        <property name="driver" value="${driver}"/>
+        <property name="url" value="${url}"/>
+        <property name="username" value="${username}"/>
+        <property name="password" value="${password}"/>
+      </dataSource>
+    </environment>
+  </environments>
+  <mappers>
+    <mapper resource="com/pro/mapper/ActivitySettingMapper.xml"/>
+    <mapper resource="com/pro/mapper/ChargeRecordMapper.xml"/>
+    <mapper resource="com/pro/mapper/PointsRecordMapper.xml"/>
+    <mapper resource="com/pro/mapper/VipCardMapper.xml"/>
+    <mapper resource="com/pro/mapper/ExchangeMapper.xml"/>
+    <mapper resource="com/pro/mapper/ProductMapper.xml"/>
+  </mappers>
+</configuration>

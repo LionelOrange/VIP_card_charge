@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.pro.dao.VipCardDao">
+  	<resultMap type="vipcard" id="vipMap">
+  		<id property="cardId" column="VIPCARDID"/>
+  		<result property="identity" column="IDENTITY"/>
+  		<result property="points" column="POINTS"/>
+  		<result property="balance" column="BALANCE"/>
+  		<result property="newCard" column="ADDDATE"/>
+  		<result property="finalDate" column="FINALDATE"/>
+  		<result property="cardName" column="CARDNAME"/>
+  		<result property="birthday" column="BIRTHDAY"/>
+  		<result property="tel" column="TEL"/>
+  		<result property="address" column="ADDRESS"/>
+  		<association property="status" javaType="status">
+  			<id property="cardStatusId" column="CSTATEID"/>
+  			<result property="cardStatus" column="CSTATEV"/>
+  		</association>
+  		<association property="employee" javaType="employee">
+  			<id property="empId" column="EMPID"/>
+  			<result property="empName" column="EMPNAME"/>
+  			<result property="password" column="PASSWORD"/>
+  			<result property="workDate" column="WORKDATE"/>
+  		</association>
+  		<collection property="setCharge" ofType="chRecord">
+  			<id property="chargeReId" column="CHARGEREID"/>
+  			<result property="chMoney" column="CHMONEY"/>
+  			<result property="chDate" column="CHDATE"/>
+  		</collection>
+  		<collection property="setPoint" ofType="poRecord">
+  			<id property="pointsReId" column="POINTSREID"/>
+  			<result property="pointsAdDate" column="POINTSADDATE"/>
+  			<result property="pointsV" column="POINTSV"/>
+	  		<association property="category" javaType="poCategory">
+	  			<id property="pointsCategory" column="POINTSCA"/>
+	  			<result property="categoryName" column="CANAME"/>
+	  		</association>
+  		</collection>
+  	</resultMap>
+  	<update id="exchange">
+  		update VIPCARD set POINTS=#{o2} where identity=#{o3.identity}
+  	</update>
+  	<update id="report">
+  		update VIPCARD set CSTATEID=2 where identity=#{identity}
+  	</update>
+	<update id="update">
+		update VIPCARD set BALANCE=#{o1},POINTS=#{o2} where VIPCARDID=#{o3.cardId}
+	</update>
+	<select id="query" resultMap="vipMap">
+		select * from VIPCARD v left join CHARGERE cr on v.VIPCARDID=cr.VIPCARDID left join POINTSRECORD on POINTSRECORD.VIPCARDID=v.VIPCARDID,POINTSCA pc left join POINTSRECORD pr on pr.POINTSCA=pc.POINTSCA,EMPLOYEEA e,CARDSTATE c
+		<where>
+			v.empId=e.empId and v.CSTATEID=c.CSTATEID and c.CSTATEV=1
+			<if test="cardId!=null">
+				and VIPCARDID=#{cardId}
+			</if>
+			<if test="identity!=null">
+				and IDENTITY=#{identity}
+			</if>
+		</where>
+	</select>
+	<insert id="add">
+		insert into VIPCARD(VIPCARDID,CSTATEID,EMPID,IDENTITY,POINTS,BALANCE,ADDDATE,CARDNAME,BIRTHDAY,TEL,ADDRESS)values(tab_sequ.nextval,1,#{employee.empId},#{identity},0,0,to_date(#{newCard},'yyyy-mm-dd hh24:mi:ss'),#{cardName},to_date(#{birthday},'yyyy-mm-dd'),#{tel},#{address})
+	</insert>
+	<select id="queryPage" resultMap="vipMap">
+		<![CDATA[
+		select * from (select rownum rn,f.* from(select v.VIPCARDID,v.CSTATEID,c.CSTATEV,v.EMPID,e.EMPNAME,v.IDENTITY,v.POINTS,v.BALANCE,v.ADDDATE,v.FINALDATE,v.CARDNAME,v.BIRTHDAY,v.TEL,v.ADDRESS from VIPCARD v,EMPLOYEEA e,CARDSTATE c
+        where
+ 		v.empId=e.empId and v.CSTATEID=c.CSTATEID and c.CSTATEV=1)f where rownum<=#{p1}) where rn>#{p2}
+		]]>
+	</select>
+	<select id="totalRecord" resultType="int">
+		select count(*) from VIPCARD v,EMPLOYEEA e,CARDSTATE c
+        where
+ 		v.empId=e.empId and v.CSTATEID=c.CSTATEID and c.CSTATEV=1
+	</select>
+  </mapper>

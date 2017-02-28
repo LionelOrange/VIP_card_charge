@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.pro.dao.PointsRecordDao">
+  		<resultMap type="poRecord" id="pointMap">
+  			<id property="pointsReId" column="POINTSREID"/>
+  			<result property="pointsAdDate" column="POINTSADDATE"/>
+  			<result property="pointsV" column="POINTSV"/>
+  			<association property="category" javaType="poCategory">
+  				<id property="pointsCategory" column="POINTSCA"/>
+  				<result property="categoryName" column="CANAME"/>
+  			</association>
+  		</resultMap>
+  		<insert id="exchange">
+  			insert into POINTSRECORD(POINTSREID,POINTSCA,VIPCARDID,EMPID,POINTSADDATE,POINTSV)values(tab_sequ.nextval,#{t1.pointsCategory},#{t2.cardId},#{t3.empId},to_date(#{t4},'yyyy-mm-dd hh24:mi:ss'),#{t5})
+  		</insert>
+  		<insert id="add">
+  			insert into POINTSRECORD(POINTSREID,POINTSCA,VIPCARDID,EMPID,POINTSADDATE,POINTSV)values(tab_sequ.nextval,#{t1.pointsCategory},#{t2.cardId},#{t3.empId},to_date(#{t4},'yyyy-mm-dd hh24:mi:ss'),#{t5})
+  		</insert>
+  		<select id="queryPointRe" resultMap="pointMap">
+  		<![CDATA[
+  			select * from (select rownum rn,rs.* from (select pr.POINTSREID,pc.POINTSCA,pc.CANAME,pr.POINTSADDATE,pr.POINTSV from POINTSRECORD pr,POINTSCA pc where pr.POINTSCA=pc.POINTSCA and pr.VIPCARDID=#{p3} order by pr.POINTSREID)rs where rownum<=#{p1}) where rn>#{p2}
+  			]]>
+  		</select>
+  		<select id="totalRecord" resultType="int">
+  			select count(*) from POINTSRECORD pr,POINTSCA pc where pr.POINTSCA=pc.POINTSCA and pr.VIPCARDID=#{0}
+  		</select>
+  </mapper>

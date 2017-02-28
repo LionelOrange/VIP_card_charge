@@ -1,0 +1,278 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD LEVEL1//EN">
+<html>
+<head>
+    <title>charge.html</title>
+    <script type="text/javascript" src="js/jquery-easyui-1.2.6/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="js/jquery-easyui-1.2.6/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/jquery-easyui-1.2.6/locale/easyui-lang-zh_CN.js"></script>
+    <link rel="stylesheet" href="js/jquery-easyui-1.2.6/themes/icon.css" type="text/css">
+    <link rel="stylesheet" href="js/jquery-easyui-1.2.6/themes/default/easyui.css" type="text/css">
+    <script type="text/javascript">
+        $(function(){
+            $('#tt').datagrid({
+                url:'VipCardServlet?me=queryVip',
+                fitColumns:true,
+                columns:[[
+                    {field:'ck',checkbox:true,width:100},
+                    {field:'cardId',title:'会员卡编号',width:50,align:'center'},
+                    {field:'employee',title:'操作员工姓名',width:100,align:'center',formatter:function(vlaue,data,index){
+                        if(data!=null){
+                            return data.employee.empName;
+                        }
+                    }},
+                    {field:'identity',title:'身份证',width:100,align:'center'},
+                    {field:'points',title:'积分',width:50,align:'center'},
+                    {field:'balance',title:'余额',width:50,align:'center'},
+                    {field:'newCard',title:'办卡日期',width:100,align:'center'},
+                    {field:'finalDate',title:'最后消费日期',width:100,align:'center'},
+                    {field:'cardName',title:'持卡人姓名',width:100,align:'center'},
+                    {field:'birthday',title:'生日',width:100,align:'center'},
+                    {field:'tel',title:'电话',width:100,align:'center'},
+                    {field:'address',title:'地址',width:100,align:'center'}
+                ]],
+                pagination:true,
+                pageSize:5,
+                pageList:[5,10,15],
+                toolbar:[
+                    {
+                        text:'添加',
+                        iconCls:'icon-add',
+                        handler:function(){
+                            $('#dialog1').dialog('open');
+                        }
+                    },
+                    '-',
+                    {
+                        text:'充值',
+                        iconCls:'icon-edit',
+                        handler:function(){
+                            var arrs=$('#tt').datagrid('getSelections');
+                            if(arrs.length!=1){
+                                $.messager.show({
+                                    title:'提示',
+                                    msg:'请选一项'
+                                });
+                            }else{
+                                $('#dialog').dialog({
+                                    title:'充值'
+                                });
+                                $('#dialog').dialog('open');
+                                $('#frm').form('load',{
+                                    cardId:arrs[0].cardId,
+                                    identity:arrs[0].identity,
+                                    cMoney:''
+                                });
+                            }
+                        }
+                    },
+                    '-',
+                    {
+                        text:'挂失',
+                        iconCls:'icon-remove',
+                        handler:function(){
+                            var arrs = $('#tt').datagrid('getSelections');
+                            if (arrs.length==1){
+                                $.messager.confirm('Confirm','确定要挂失吗',function(r){
+                                    if (r){
+                                        var dsr=arrs[0].identity;
+                                        $.ajax({
+                                            url:'VipCardServlet',
+                                            type:'post',
+                                            dataType:'json',
+                                            data:{me:'report',id:dsr},
+                                            success:function(data){
+                                                $('#tt').datagrid('reload');
+                                                $.messager.show({
+                                                    title:'挂失成功',
+                                                    msg:'hghg'+data
+                                                });
+                                            }
+                                        });
+                                    }else{
+                                        return;
+                                    }
+                                });
+                            }else{
+                                $.messager.show({
+                                    title:'提示',
+                                    msg:'请选择一项'
+                                });
+                            }
+                        }
+                    },
+                    '-',
+                    {
+                        text:'充值记录',
+                        iconCls:'icon-edit',
+                        handler:function(){
+                            var arrs=$('#tt').datagrid('getSelections');
+                            if(arrs.length!=1){
+                                $.messager.show({
+                                    title:'提示',
+                                    msg:'请选一项'
+                                });
+                            }else{
+                                $('#dialog2').dialog({
+                                    title:'充值记录'
+                                });
+                                $('#dialog2').dialog('open');
+                                $('#tt1').datagrid({
+                                    url:'VipCardServlet?me=queryChargeRe&carId='+arrs[0].cardId+'',
+                                    dataType:'json',
+                                    data:{carId:1},
+                                    fitColumns:true,
+                                    columns:[[
+                                        {field:'ck',checkbox:true,width:100},
+                                        {field:'chargeReId',title:'记录编号',width:50,align:'center'},
+                                        {field:'chMoney',title:'充值金额',width:50,align:'center'},
+                                        {field:'chDate',title:'充值日期',width:50,align:'center'}
+                                    ]],
+                                    pagination:true,
+                                    pageSize:5,
+                                    pageList:[5,10,15]
+                                });
+                            }
+                        }
+                    },
+                    '-',
+                    {
+                        text:'积分记录',
+                        iconCls:'icon-edit',
+                        handler:function(){
+                            var arrs=$('#tt').datagrid('getSelections');
+                            if(arrs.length!=1){
+                                $.messager.show({
+                                    title:'提示',
+                                    msg:'请选一项'
+                                });
+                            }else{
+                                $('#dialog3').dialog({
+                                    title:'积分记录'
+                                });
+                                $('#dialog3').dialog('open');
+                                $('#tt2').datagrid({
+                                    url:'VipCardServlet?me=queryPointRe&carId='+arrs[0].cardId+'',
+                                    dataType:'json',
+                                    fitColumns:true,
+                                    columns:[[
+                                        {field:'ck',checkbox:true,width:100},
+                                        {field:'pointsReId',title:'记录编号',width:50,align:'center'},
+                                        {field:'category',title:'积分类型',width:100,align:'center',formatter:function(vlaue,data,index){
+                                            if(data!=null){
+                                                return data.category.categoryName;
+                                            }
+                                        }},
+                                        {field:'pointsAdDate',title:'添加积分日期',width:50,align:'center'},
+                                        {field:'pointsV',title:'积分值',width:50,align:'center'}
+                                    ]],
+                                    pagination:true,
+                                    pageSize:5,
+                                    pageList:[5,10,15]
+                                });
+                            }
+                        }
+                    }
+            ]
+            });
+            $('#bt').click(function(){
+                $.ajax({
+                    url:'VipCardServlet?me=charge',
+                    dataType:'json',
+                    type:'post',
+                    data:$('#frm').serialize(),
+                    success:function(result){
+                        $('#tt').datagrid('reload');
+                        $('#dialog').dialog('close');
+                        $('#frm').get(0).reset();
+                        $.messager.show({
+                            title:'提示',
+                            msg:result
+                        });
+                    }
+                });
+            });
+            $('#bt1').click(function(){
+                $.ajax({
+                    url:'VipCardServlet?me=add',
+                    dataType:'json',
+                    type:'post',
+                    data:$('#frm1').serialize(),
+                    success:function(result){
+                        $('#tt').datagrid('reload');
+                        $('#dialog1').dialog('close');
+                        $('#frm1').get(0).reset();
+                        $.messager.show({
+                            title:'提示',
+                            msg:result
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+
+<body>
+<table id="tt"></table>
+<div id="dialog" class="easyui-dialog" title="添加" closed="true" modal="true" style="width:400px;height:200px;left:100px;top:150px;padding:10px"
+     toolbar="#dlg-toolbar" buttons="#dlg-buttons" resizable="true">
+    <form id="frm" method="post">
+        <table>
+            <tr>
+                <td>会员卡编号：</td>
+                <td><input type="text" name="cardId" id="cardId"></td>
+            </tr>
+            <tr>
+                <td>身份证：</td>
+                <td><input type="text" name="identity"></td>
+            </tr>
+            <tr>
+                <td>充值金额：</td>
+                <td><input type="text" name="cMoney"></td>
+            </tr>
+        </table>
+        <input type="button" value="ok" id="bt">
+    </form>
+</div>
+<div id="dialog1" class="easyui-dialog" title="添加" closed="true" modal="true" style="width:400px;height:200px;left:100px;top:150px;padding:10px"
+     toolbar="#dlg-toolbar" buttons="#dlg-buttons" resizable="true">
+    <form id="frm1" method="post">
+        <table>
+            <tr>
+                <td>身份证：</td>
+                <td><input type="text" name="identity"></td>
+            </tr>
+            <tr>
+                <td>持卡人姓名：</td>
+                <td><input type="text" name="cardName"></td>
+            </tr>
+            <tr>
+                <td>生日：</td>
+                <td><input type="text" name="birthday"></td>
+            </tr>
+            <tr>
+                <td>电话：</td>
+                <td><input type="text" name="tel"></td>
+            </tr>
+            <tr>
+                <td>地址：</td>
+                <td><input type="text" name="address"></td>
+            </tr>
+        </table>
+        <input type="button" value="ok" id="bt1">
+    </form>
+</div>
+<div id="dialog2" class="easyui-dialog" title="添加" closed="true" modal="true" style="width:400px;height:200px;left:100px;top:150px;padding:10px"
+     toolbar="#dlg-toolbar" buttons="#dlg-buttons" resizable="true">
+    <table id="tt1"></table>
+</div>
+<div id="dialog3" class="easyui-dialog" title="添加" closed="true" modal="true" style="width:400px;height:200px;left:100px;top:150px;padding:10px"
+     toolbar="#dlg-toolbar" buttons="#dlg-buttons" resizable="true">
+    <table id="tt2"></table>
+</div>
+<div id="dialog4" class="easyui-dialog" title="添加" closed="true" modal="true" style="width:400px;height:200px;left:100px;top:150px;padding:10px"
+     toolbar="#dlg-toolbar" buttons="#dlg-buttons" resizable="true">
+    <table id="tt3"></table>
+</div>
+</body>
+</html>

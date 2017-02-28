@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pro.dao.ExchangeDao">
+		<resultMap type="exchange" id="exchangeMap">
+			<id property="exchagePrId" column="EXCHANGEPRID"/>
+			<result property="exchangeP" column="EXCHANGEP"/>
+			<association property="product" javaType="product">
+				<id property="productId" column="PRODUCTID"/>
+				<result property="productName" column="PRODUCTNAME"/>
+				<result property="quantity" column="QUANTITY"/>
+				<association property="categorys" javaType="category">
+					<id property="categoryId" column="CATEGORYID"/>
+					<result property="categoryName" column="CATEGORYNAME"/>
+				</association>
+				<association property="provider" javaType="provider">
+					<id property="providerId" column="PROVIDERID"/>
+					<result property="providerName" column="PROVIDERNAME"/>
+				</association>
+			</association>
+		</resultMap>
+  		<select id="queryExchange" resultMap="exchangeMap">
+  		<![CDATA[
+  			select * from (select rownum rn,s.* from(select e.EXCHANGEPRID,e.EXCHANGEP,p.PRODUCTID,p.PRODUCTNAME,p.QUANTITY,c.CATEGORYID,c.CATEGORYNAME,pr.PROVIDERID,pr.PROVIDERNAME from exchange e,products p,categorys c,provider pr where e.productId=p.productId and p.categoryId=c.categoryId and p.providerId=pr.providerId order by e.EXCHANGEPRID)s where rownum<=#{p1}) where rn>#{p2}
+  			]]>
+  		</select>
+  		<select id="totalRecord" resultType="int">
+  			select count(*) from exchange
+  		</select>
+  		<select id="queryByExchangeId" resultMap="exchangeMap">
+  			select e.EXCHANGEPRID,e.EXCHANGEP,p.PRODUCTID,p.PRODUCTNAME,p.QUANTITY,c.CATEGORYID,c.CATEGORYNAME,pr.PROVIDERID,pr.PROVIDERNAME from exchange e,products p,categorys c,provider pr where e.productId=p.productId and p.categoryId=c.categoryId and p.providerId=pr.providerId and e.EXCHANGEPRID=#{exchagePrId}
+  		</select>
+ </mapper>

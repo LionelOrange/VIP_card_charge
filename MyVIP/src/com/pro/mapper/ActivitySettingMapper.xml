@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+ <!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.pro.dao.ActivitySettingDao">
+  	<resultMap type="acSetting" id="acMap">
+  		<id property="acSettingId" column="ACSETTINGID"/>
+  		<result property="title" column="TITLE"/>
+  		<result property="startDate" column="STARTDATE"/>
+  		<result property="endDate" column="ENDDATE"/>
+  		<association property="priority" javaType="priority">
+  			<id property="priorityId" column="PRIORITYID"/>
+  			<result property="grade" column="GRADE"/>
+  		</association>
+  		<collection property="set" ofType="detail">
+  			<id property="detailId" column="ACDETAILID"/>
+  			<result property="chMoney" column="CHMONEY"/>
+  			<result property="pointsValue" column="POINTSVALUE"/>
+  		</collection>
+  	</resultMap>
+  	<select id="query" parameterType="chRecord" resultMap="acMap">
+  		<![CDATA[select * from  ACTISETTING a,ACDETAIL d,PRIORITY p 
+			where p.priorityId=a.priorityId and a.ACSETTINGID=d.ACSETTINGID
+			and p.grade=(select MIN(P.GRADE) FROM ACTISETTING a,PRIORITY p where p.priorityId=a.priorityId and to_date(#{chDate},'yyyy-mm-dd hh24:mi:ss')>=a.STARTDATE and to_date(#{chDate},'yyyy-mm-dd hh24:mi:ss')<= a.ENDDATE)
+		]]>
+  	</select>
+  </mapper>

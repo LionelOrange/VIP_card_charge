@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD LEVEL1//EN">
+<html>
+  <head>
+    <title>Exchange.html</title>
+      <script type="text/javascript" src="js/jquery-easyui-1.2.6/jquery-1.7.2.min.js"></script>
+      <script type="text/javascript" src="js/jquery-easyui-1.2.6/jquery.easyui.min.js"></script>
+      <script type="text/javascript" src="js/jquery-easyui-1.2.6/locale/easyui-lang-zh_CN.js"></script>
+      <link rel="stylesheet" href="js/jquery-easyui-1.2.6/themes/icon.css" type="text/css">
+      <link rel="stylesheet" href="js/jquery-easyui-1.2.6/themes/default/easyui.css" type="text/css">
+      <script type="text/javascript">
+          $(function(){
+              $('#tb').datagrid({
+                   url:'VipCardServlet?me=queryExchange',
+                   fitColumns:true,
+                   columns:[[
+                  {field:'ck',checkbox:true,width:100},
+                  {field:'exchagePrId',title:'兑换产品编号',width:50,align:'center'},
+                  {field:'product',title:'产品',width:100,align:'center',formatter:function(vlaue,data,index){
+                      if(data!=null){
+                          return data.product.productName;
+                      }
+                  }},
+                  {field:'exchangeP',title:'兑换积分',width:100,align:'center'}
+                  ]],
+                  pagination:true,
+                  pageSize:5,
+                  pageList:[5,10,15],
+                  toolbar:[
+                      {
+                          text:'兑换',
+                          iconCls:'icon-add',
+                          handler:function(){
+                              var arrs=$('#tb').datagrid('getSelections');
+                              if(arrs.length!=1){
+                                  $.messager.show({
+                                      title:'提示',
+                                      msg:'请选一项'
+                                  });
+                              }else{
+                                  $('#dialog').dialog({
+                                      title:'兑换'
+                                  });
+                                  $('#dialog').dialog('open');
+                                  $('#frm').form('load',{
+                                      exchagePrId:arrs[0].exchagePrId
+                                  });
+                              }
+                          }
+                      }
+                  ]
+              });
+              $('#bt').click(function(){
+                  $.ajax({
+                      url:'VipCardServlet?me=exchange',
+                      dataType:'json',
+                      type:'post',
+                      data:$('#frm').serialize(),
+                      success:function(result){
+                          $('#tb').datagrid('reload');
+                          $('#dialog').dialog('close');
+                          $('#frm').get(0).reset();
+                          $.messager.show({
+                              title:'提示',
+                              msg:result
+                          });
+                      }
+                  });
+              });
+          });
+      </script>
+  </head>
+  <body>
+  <table id="tb"></table>
+  <div id="dialog" class="easyui-dialog" title="兑换" closed="true" modal="true" style="width:400px;height:200px;left:100px;top:150px;padding:10px"
+       toolbar="#dlg-toolbar" buttons="#dlg-buttons" resizable="true">
+      <form id="frm" method="post">
+          <table>
+              <tr>
+                  <td>会员卡身份证：</td>
+                  <td><input type="text" name="identity" id="identity"></td>
+              </tr>
+              <tr>
+                  <td>兑换产品编号：</td>
+                  <td><input type="text" name="exchagePrId" id="exchagePrId"></td>
+              </tr>
+          </table>
+          <input type="button" value="ok" id="bt">
+      </form>
+  </div>
+  </body>
+</html>

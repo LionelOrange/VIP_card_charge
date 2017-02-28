@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+ <!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pro.dao.ChargeRecordDao">
+  		<insert id="add">
+  			insert into CHARGERE(CHARGEREID,EMPID,VIPCARDID,CHMONEY,CHDATE)values(tab_sequ.nextval,#{p1.empId},#{p2.cardId},#{p3},to_date(#{p4},'yyyy-mm-dd hh24:mi:ss'))
+  		</insert>
+  		<select id="queryChargeRe" resultType="chRecord">
+  		<![CDATA[
+  			select * from (select rownum rn,s.* from(select * from CHARGERE where VIPCARDID=#{p3} order by chargereId)s where rownum<#{p1}) where rn>=#{p2}
+  			]]>
+  		</select>
+  		<select id="totalRecord" resultType="int">
+  			select count(*) from CHARGERE where VIPCARDID=#{0}
+  		</select>
+ </mapper>

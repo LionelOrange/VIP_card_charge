@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD LEVEL1//EN">
+          <html>
+          <head>
+          <title>index.html</title>
+
+  <script type="text/javascript" src="js/jquery-easyui-1.2.6/jquery-1.7.2.min.js"></script>
+  <script type="text/javascript" src="js/jquery-easyui-1.2.6/jquery.easyui.min.js"></script>
+  <script type="text/javascript" src="js/jquery-easyui-1.2.6/locale/easyui-lang-zh_CN.js"></script>
+  <link rel="stylesheet" href="js/jquery-easyui-1.2.6/themes/icon.css" type="text/css">
+  <link rel="stylesheet" href="js/jquery-easyui-1.2.6/themes/default/easyui.css" type="text/css"></head>
+  <script type="text/javascript">
+      $(function(){
+          $('a[title]').click(function(){
+              var url=$(this).attr('title');
+              var title=$(this).html();
+              if($('#tt').tabs('exists',title)){
+                  $('#tt').tabs('select',title);
+              }else{
+                  $('#tt').tabs('add',{
+                      title:title,
+                      closable:true,
+                      content:'<iframe src="'+url
+                              +'" width="100%" height="100%"></iframe>'
+                  });
+              }
+          });
+      });
+  </script>
+  <body class="easyui-layout">
+  <div region="north" border="false" style="height:60px;background:#B3DFDA;padding:10px">north region</div>
+  <div region="west" split="true" title="West" style="width:150px;padding:10px;">
+      <div id="aa" class="easyui-accordion" fit="true" style="width:700px;height:300px;">
+          <div title="会员卡管理" iconCls="icon-ok" style="overflow:auto;padding:10px;">
+              <p><a href="#" title="charge.html">查询会员卡</a></p>
+              <p><a href="#" title="Exchange.html">兑换积分</a></p>
+          </div>
+          <div title="Title2" iconCls="icon-reload" selected="true">
+              <table class="easyui-datagrid"
+                     url="datagrid_data2.json" border="false"
+                     fit="true" fitColumns="true">
+                  <thead>
+                  <tr>
+                      <th field="itemid" width="80">Item ID</th>
+                      <th field="productid" width="100">Product ID</th>
+                      <th field="listprice" width="80" align="right">List Price</th>
+                      <th field="unitcost" width="80" align="right">Unit Cost</th>
+                  </tr>
+                  </thead>
+              </table>
+          </div>
+          <div title="Title3" style="padding:10px;">
+              content3
+          </div>
+      </div>
+  </div>
+  <div region="center" title="Main Title">
+      <div id="tt" class="easyui-tabs" fit="true" tools="#tab-tools" style="width:700px;height:250px;">
+
+          </div>
+  </div>
+  </body>
+</html>
